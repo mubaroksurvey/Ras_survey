@@ -1,0 +1,37 @@
+{
+  "site": {
+    "name": "Ras Survey",
+    "url": "https://www.rassurvey.com",
+    "title": "Ras Survey - Toko Alat Survey Terpercaya",
+    "description": "Supplier dan distributor alat survey berkualitas. Menyediakan Total Station, Theodolite, GPS, serta layanan service, kalibrasi, dan rental.",
+    "keywords": [
+      "alat survey",
+      "total station",
+      "theodolite",
+      "gps survey",
+      "jual alat survey",
+      "service alat survey",
+      "kalibrasi alat ukur",
+      "rental alat survey"
+    ],
+    "image": "/img/logo.png"
+  },
+  "pages": {
+    "/": {
+      "title": "Ras Survey - Toko Alat Survey Terpercaya",
+      "description": "Supplier dan distributor alat survey berkualitas. Menyediakan Total Station, Theodolite, GPS, serta layanan service, kalibrasi, dan rental."
+    },
+    "/produk": {
+      "title": "Produk Alat Survey | Ras Survey",
+      "description": "Jelajahi katalog alat survey Ras Survey: Total Station, Theodolite, GPS, alat ukur, dan instrumen survey lainnya."
+    },
+    "/layanan": {
+      "title": "Layanan Service, Kalibrasi & Rental | Ras Survey",
+      "description": "Layanan service, kalibrasi, rental, dan konsultasi alat survey oleh teknisi berpengalaman Ras Survey."
+    },
+    "/tentang": {
+      "title": "Tentang Ras Survey",
+      "description": "Kenali Ras Survey, supplier dan distributor alat survey yang melayani penjualan, service, rental, dan kalibrasi sejak 2017."
+    }
+  }
+}

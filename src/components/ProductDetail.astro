@@ -1,0 +1,199 @@
+---
+import { sanitizeRichText } from "../utils/sanitizeRichText";
+
+interface ProductFeature {
+  title: string;
+  description: string;
+}
+
+interface ProductSpecification {
+  title: string;
+  rows: Array<{ label: string; value: string }>;
+}
+
+interface Product {
+  name: string;
+  heading: string;
+  description: string;
+  productDescription: string;
+  tags?: string[];
+  image: string;
+  gallery: string[];
+  features: ProductFeature[];
+  specifications: ProductSpecification[];
+}
+
+interface Props {
+  product: Product;
+  language?: "id" | "en";
+}
+
+const { product, language = "id" } = Astro.props;
+const message =
+  language === "en"
+    ? `Hello, I would like to ask about ${product.name}`
+    : `Halo, saya ingin bertanya tentang ${product.name}`;
+const whatsappUrl = `https://wa.me/6281295958196?text=${encodeURIComponent(message)}`;
+---
+
+<article class="mx-auto max-w-7xl px-4 pb-16 pt-8 sm:px-6 lg:px-8">
+  <nav class="mb-6 text-sm text-slate-500" aria-label="Breadcrumb">
+    <a class="hover:text-blue-700" href="/">Beranda</a>
+    <span aria-hidden="true"> / </span>
+    <a class="hover:text-blue-700" href="/produk">Produk</a>
+    <span aria-hidden="true"> / </span>
+    <span class="text-slate-700">{product.name}</span>
+  </nav>
+
+  <div class="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-12">
+    <div class="space-y-3">
+      <div class="flex aspect-square items-center justify-center overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        <img
+          class="product-main-image max-h-full w-full object-contain"
+          src={product.image}
+          alt={product.heading}
+          width="640"
+          height="640"
+          fetchpriority="high"
+        />
+      </div>
+      {product.gallery.length > 1 && (
+        <div class="grid grid-cols-5 gap-2 sm:grid-cols-6">
+          {product.gallery.map((image, index) => (
+            <button
+              class:list={["product-thumbnail", image === product.image && "selected"]}
+              type="button"
+              data-image={image}
+              data-alt={`${product.heading} - ${index + 1}`}
+              aria-label={`Tampilkan gambar ${index + 1}`}
+              aria-pressed={image === product.image ? "true" : "false"}
+            >
+              <img src={image} alt="" loading="lazy" width="100" height="100" />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+
+    <div>
+      <p class="mb-3 text-sm font-semibold uppercase tracking-wider text-blue-700">{product.name}</p>
+      <h1 class="text-3xl font-bold leading-tight tracking-tight text-slate-950 sm:text-4xl">{product.heading}</h1>
+      <div
+        class="product-rich-text mt-5 text-base leading-7 text-slate-600"
+        set:html={sanitizeRichText(product.productDescription || product.description)}
+      />
+      {product.tags?.length ? (
+        <ul class="mt-4 flex flex-wrap gap-2" aria-label="Tag produk">
+          {product.tags.map((tag) => (
+            <li class="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">{tag}</li>
+          ))}
+        </ul>
+      ) : null}
+      <a
+        class="mt-7 inline-flex min-h-12 items-center justify-center rounded-xl bg-green-600 px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-green-700"
+        href={whatsappUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Pesan via WhatsApp
+      </a>
+    </div>
+  </div>
+
+  {product.features.length > 0 && (
+    <section class="mt-12" aria-labelledby="product-features">
+      <h2 id="product-features" class="mb-5 text-2xl font-bold text-slate-900">Keunggulan Produk</h2>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {product.features.map((feature) => (
+          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="font-semibold text-slate-900">{feature.title}</h3>
+            <p class="mt-2 leading-6 text-slate-600">{feature.description}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {product.specifications.length > 0 && (
+    <section class="mt-12" aria-labelledby="product-specifications">
+      <h2 id="product-specifications" class="mb-5 text-2xl font-bold text-slate-900">Spesifikasi Produk</h2>
+      <div class="grid gap-5 lg:grid-cols-2">
+        {product.specifications.map((group) => (
+          <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <h3 class="bg-slate-50 px-5 py-3 font-semibold text-slate-900">{group.title}</h3>
+            <div class="divide-y divide-slate-100">
+              {group.rows.map((row) => (
+                <div class="grid grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] gap-4 px-5 py-3 text-sm">
+                  <span class="font-medium text-slate-600">{row.label}</span>
+                  <span class="text-slate-800">{row.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+</article>
+
+<style>
+  .product-rich-text :global(:first-child) {
+    margin-top: 0;
+  }
+
+  .product-rich-text :global(ul),
+  .product-rich-text :global(ol) {
+    padding-left: 1.5rem;
+  }
+
+  .product-rich-text :global(a) {
+    color: #175cd3;
+    text-decoration: underline;
+  }
+
+  .product-thumbnail {
+    display: flex;
+    aspect-ratio: 1;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    background: white;
+    padding: 0.25rem;
+    cursor: pointer;
+  }
+
+  .product-thumbnail.selected {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 1px #2563eb;
+  }
+
+  .product-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>(".product-thumbnail").forEach((button) => {
+    button.addEventListener("click", () => {
+      const image = button.dataset.image;
+      const mainImage = button
+        .closest("article")
+        ?.querySelector<HTMLImageElement>(".product-main-image");
+      if (!image || !mainImage) return;
+      mainImage.src = image;
+      mainImage.alt = button.dataset.alt ?? "";
+      button
+        .parentElement
+        ?.querySelectorAll<HTMLButtonElement>(".product-thumbnail")
+        .forEach((thumbnail) => {
+          const selected = thumbnail === button;
+          thumbnail.classList.toggle("selected", selected);
+          thumbnail.setAttribute("aria-pressed", String(selected));
+        });
+    });
+  });
+</script>

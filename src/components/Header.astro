@@ -1,0 +1,139 @@
+---
+import seo from "../data/seo.json";
+
+interface Props {
+  route: string;
+  language: "id" | "en";
+}
+
+const { route, language } = Astro.props;
+const home = language === "en" ? "/en/" : "/";
+const languageNeutralRoute = route === "/" || route === "/404" ? "/" : route;
+const englishHref = `/en${languageNeutralRoute === "/" ? "/" : languageNeutralRoute}`;
+const indonesianHref = languageNeutralRoute;
+const links =
+  language === "en"
+    ? [
+        { href: "/en/", label: "Home" },
+        { href: "/en/produk", label: "Products" },
+        { href: "/en/tentang", label: "About" },
+        { href: "/en/layanan", label: "Services" },
+      ]
+    : [
+        { href: "/", label: "Beranda" },
+        { href: "/produk", label: "Produk" },
+        { href: "/tentang", label: "Tentang" },
+        { href: "/layanan", label: "Layanan" },
+      ];
+---
+
+<header class="site-header">
+  <nav class="site-nav" aria-label={language === "en" ? "Main navigation" : "Navigasi utama"}>
+    <a class="brand" href={home} aria-label={seo.site.name}>
+      <img src="/img/logo.png" alt="" width="42" height="42" />
+      <span>{seo.site.name}</span>
+    </a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-links">
+      <span class="sr-only">{language === "en" ? "Open menu" : "Buka menu"}</span>
+      <span aria-hidden="true">☰</span>
+    </button>
+    <div class="nav-links" id="primary-links">
+      {links.map((item) => (
+        <a
+          href={item.href}
+          class:list={["nav-link", route === item.href.replace(/^\/en/, "") ? "active" : ""]}
+        >
+          {item.label}
+        </a>
+      ))}
+    </div>
+    <form class="nav-search" action={language === "en" ? "/en/produk" : "/produk"} role="search">
+      <label class="sr-only" for="site-search">{language === "en" ? "Search products" : "Cari produk"}</label>
+      <input
+        id="site-search"
+        type="search"
+        name="q"
+        placeholder={language === "en" ? "Search products..." : "Cari produk..."}
+      />
+      <button type="submit" aria-label={language === "en" ? "Search" : "Cari"}>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
+          <circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="2" />
+          <path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </button>
+    </form>
+    <div class="language-switch" aria-label="Language">
+      <a
+        href={englishHref}
+        data-language-switch="en"
+        aria-current={language === "en" ? "page" : undefined}
+      >EN</a>
+      <a
+        href={indonesianHref}
+        data-language-switch="id"
+        aria-current={language === "id" ? "page" : undefined}
+      >ID</a>
+    </div>
+  </nav>
+</header>
+
+<script>
+  const languageSwitchPathKey = "language-switch-path";
+  const languageSwitchScrollKey = "language-switch-scroll";
+
+  document.querySelectorAll<HTMLAnchorElement>("[data-language-switch]").forEach((link) => {
+    link.addEventListener("click", () => {
+      if (link.getAttribute("aria-current") === "page") return;
+
+      sessionStorage.setItem(languageSwitchPathKey, new URL(link.href).pathname);
+      sessionStorage.setItem(languageSwitchScrollKey, String(window.scrollY));
+    });
+  });
+
+  const restoreLanguageSwitchScroll = () => {
+    const targetPath = sessionStorage.getItem(languageSwitchPathKey);
+    const savedScroll = sessionStorage.getItem(languageSwitchScrollKey);
+    sessionStorage.removeItem(languageSwitchPathKey);
+    sessionStorage.removeItem(languageSwitchScrollKey);
+
+    const scrollY = Number(savedScroll);
+    if (targetPath !== window.location.pathname || !Number.isFinite(scrollY) || scrollY < 0) return;
+
+    const previousScrollBehavior = document.documentElement.style.scrollBehavior;
+    document.documentElement.style.scrollBehavior = "auto";
+    let intervalId: number | undefined;
+    const finishRestoring = () => {
+      if (intervalId !== undefined) window.clearInterval(intervalId);
+      document.documentElement.style.scrollBehavior = previousScrollBehavior;
+    };
+    const restoreScroll = () => {
+      window.scrollTo(0, scrollY);
+      if (window.scrollY >= scrollY) finishRestoring();
+    };
+
+    restoreScroll();
+    if (window.scrollY < scrollY) {
+      let attempts = 0;
+      intervalId = window.setInterval(() => {
+        attempts += 1;
+        restoreScroll();
+        if (attempts >= 40) finishRestoring();
+      }, 100);
+    }
+  };
+
+  if (document.readyState === "complete") {
+    requestAnimationFrame(restoreLanguageSwitchScroll);
+  } else {
+    window.addEventListener("load", restoreLanguageSwitchScroll, { once: true });
+  }
+
+  const menuToggle = document.querySelector<HTMLButtonElement>(".menu-toggle");
+  const primaryLinks = document.querySelector<HTMLElement>("#primary-links");
+
+  menuToggle?.addEventListener("click", () => {
+    const isOpen = menuToggle.getAttribute("aria-expanded") === "true";
+    menuToggle.setAttribute("aria-expanded", String(!isOpen));
+    primaryLinks?.classList.toggle("is-open", !isOpen);
+  });
+</script>

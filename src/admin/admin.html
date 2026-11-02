@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <title>Admin Produk Lokal | Ras Survey</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #172033;
+        background: #f3f6fb;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+      }
+
+      * { box-sizing: border-box; }
+      body { min-width: 320px; margin: 0; }
+      button, input, textarea, select { font: inherit; }
+      button { cursor: pointer; }
+      .topbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem clamp(1rem, 3vw, 2.5rem); background: #fff; border-bottom: 1px solid #e2e8f0; }
+      .brand { color: #101828; font-size: 1.1rem; font-weight: 850; letter-spacing: -.03em; text-decoration: none; }
+      .local-badge { border-radius: 999px; padding: .4rem .7rem; color: #05603a; background: #ecfdf3; font-size: .78rem; font-weight: 750; }
+      main { max-width: 1500px; margin: 0 auto; padding: 1.5rem clamp(1rem, 3vw, 2.5rem) 4rem; }
+      .page-heading { display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: 1.25rem; }
+      .page-actions { display: flex; flex-wrap: wrap; gap: .55rem; }
+      h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.1rem); letter-spacing: -.04em; }
+      .subheading { margin: .4rem 0 0; color: #64748b; font-size: .92rem; }
+      .panel { border: 1px solid #e2e8f0; border-radius: 1rem; background: #fff; box-shadow: 0 8px 25px rgb(16 24 40 / 4%); }
+      .editor { min-width: 0; padding: clamp(1rem, 2vw, 1.5rem); }
+      .editor-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #edf1f6; }
+      .editor-heading h2 { margin: 0; font-size: 1.15rem; }
+      .direct-edit-hint { display: inline-flex; align-items: center; gap: .4rem; border: 1px solid #bfdbfe; border-radius: 999px; background: #eff6ff; padding: .4rem .65rem; color: #1d4ed8; font-size: .73rem; font-weight: 750; }
+      .direct-edit-hint::before { width: .45rem; height: .45rem; border-radius: 50%; background: #3b82f6; content: ""; }
+      .field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1.2rem; }
+      .field { display: grid; gap: .4rem; min-width: 0; }
+      .field.full { grid-column: 1 / -1; }
+      .field label { color: #344054; font-size: .82rem; font-weight: 700; }
+      .field small, .hint { color: #64748b; font-size: .76rem; line-height: 1.5; }
+      input, textarea, select { width: 100%; min-width: 0; border: 1px solid #cbd5e1; border-radius: .65rem; outline: 0; background: #fff; padding: .7rem .8rem; color: #172033; }
+      input:focus, textarea:focus, select:focus { border-color: #84adff; box-shadow: 0 0 0 3px rgb(23 92 211 / 10%); }
+      textarea { min-height: 100px; resize: vertical; }
+      .section-title { margin: 1.7rem 0 .4rem; font-size: 1rem; }
+      .section-heading { display: flex; justify-content: space-between; align-items: center; gap: .75rem; margin-top: 1.7rem; }
+      .section-heading .section-title { margin: 0; }
+      .live-preview, .repeater-card, .seo-preview { min-width: 0; overflow: hidden; border: 1px solid #e2e8f0; border-radius: .8rem; background: #fff; }
+      .rich-toolbar { display: flex; flex-wrap: wrap; gap: .3rem; padding: .5rem; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
+      .tool-button { min-width: 2.2rem; min-height: 2.1rem; border: 1px solid transparent; border-radius: .45rem; background: transparent; color: #334155; font-size: .82rem; font-weight: 700; }
+      .tool-button:hover, .tool-button:focus-visible { border-color: #cbd5e1; background: #fff; }
+      .preview-content ul, .preview-content ol { padding-left: 1.5rem; }
+      .preview-label { display: flex; justify-content: space-between; gap: .5rem; padding: .65rem .8rem; border-bottom: 1px solid #edf1f6; color: #64748b; font-size: .72rem; font-weight: 750; letter-spacing: .04em; text-transform: uppercase; }
+      .preview-content { min-height: 210px; padding: .85rem 1rem; color: #475569; font-size: .9rem; line-height: 1.65; }
+      .preview-content[contenteditable="true"], [contenteditable="true"].inline-edit { outline: 0; cursor: text; }
+      .preview-content[contenteditable="true"]:focus, [contenteditable="true"].inline-edit:focus { box-shadow: inset 0 0 0 2px rgb(23 92 211 / 20%); }
+      [contenteditable="true"].inline-edit:hover, .preview-content[contenteditable="true"]:hover { border-radius: .3rem; background: #f8fbff; }
+      [contenteditable="true"][data-placeholder]:empty::before { color: #94a3b8; content: attr(data-placeholder); }
+      .preview-content > :first-child { margin-top: 0; }
+      .preview-content > :last-child { margin-bottom: 0; }
+      .seo-preview { margin-top: .75rem; padding: 1rem; }
+      .seo-preview cite { color: #475569; font-size: .75rem; font-style: normal; }
+      .seo-preview strong { display: block; overflow: hidden; margin-top: .3rem; color: #1a0dab; font-size: 1.05rem; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+      .seo-preview p { display: -webkit-box; overflow: hidden; margin: .25rem 0 0; color: #475569; font-size: .83rem; line-height: 1.5; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+      .preview-breadcrumb { padding: 1rem clamp(1rem, 3vw, 2rem) 0; color: #64748b; font-size: .78rem; }
+      .product-preview { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(1rem, 3vw, 2rem); padding: .75rem clamp(1rem, 3vw, 2rem) 2rem; }
+      .preview-gallery { min-width: 0; }
+      .preview-image-frame { position: relative; display: flex; width: 100%; aspect-ratio: 1; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #e2e8f0; border-radius: 1rem; background: #fff; padding: 1rem; }
+      .preview-image-frame:hover { border-color: #93c5fd; box-shadow: 0 0 0 2px rgb(37 99 235 / 10%); }
+      .product-preview-image { width: 100%; height: 100%; object-fit: contain; }
+      .preview-image-placeholder { color: #94a3b8; font-size: .85rem; }
+      .preview-image-change { position: absolute; right: .65rem; bottom: .65rem; border-radius: 999px; background: rgb(23 32 51 / 82%); padding: .35rem .65rem; color: #fff; font-size: .7rem; font-weight: 700; }
+      .preview-thumbnails { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: .45rem; margin-top: .55rem; }
+      .preview-thumbnail { aspect-ratio: 1; overflow: hidden; border: 1px solid #e2e8f0; border-radius: .6rem; background: #fff; padding: .2rem; }
+      .preview-thumbnail.selected { border-color: #2563eb; box-shadow: 0 0 0 1px #2563eb; }
+      .preview-thumbnail img { width: 100%; height: 100%; object-fit: contain; }
+      .product-preview h1 { margin: .35rem 0 .6rem; border-radius: .3rem; color: #101828; font-size: clamp(1.35rem, 2.4vw, 2rem); line-height: 1.2; }
+      .product-preview-name { color: #175cd3; font-size: .78rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+      .product-preview-summary { margin: .65rem 0 0; border-radius: .3rem; color: #475569; font-size: .9rem; line-height: 1.55; }
+      .preview-summary-label { margin-top: .8rem; color: #94a3b8; font-size: .65rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+      .product-preview-description { min-height: 110px; margin-top: .9rem; padding: .65rem; border: 1px dashed #d0d5dd; border-radius: .65rem; color: #475569; font-size: .88rem; line-height: 1.65; }
+      .live-preview .preview-toolbar-label { align-items: center; background: #fff; }
+      .preview-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .8rem; }
+      .preview-tags span { border-radius: 999px; background: #eff6ff; padding: .25rem .65rem; color: #1d4ed8; font-size: .72rem; }
+      .preview-tags[contenteditable="true"] { min-height: 1.8rem; border-radius: .4rem; outline: 0; }
+      .preview-tags[contenteditable="true"]:focus { box-shadow: inset 0 0 0 2px rgb(23 92 211 / 20%); }
+      .preview-contact { display: inline-flex; min-height: 2.5rem; align-items: center; margin-top: 1rem; border-radius: .7rem; background: #16a34a; padding: .55rem 1rem; color: #fff; font-size: .8rem; font-weight: 700; }
+      .preview-section { padding: .25rem clamp(1rem, 3vw, 2rem) 1.5rem; }
+      .preview-section-heading { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: .8rem; }
+      .preview-section-heading h2 { margin: 0; color: #101828; font-size: 1.1rem; }
+      .preview-feature-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem; }
+      .preview-feature { position: relative; min-height: 5rem; border: 1px solid #e2e8f0; border-radius: .8rem; padding: .75rem; color: #475569; font-size: .78rem; line-height: 1.5; }
+      .preview-feature [data-preview-feature-title] { display: block; min-height: 1.3rem; color: #172033; font-size: .84rem; font-weight: 700; }
+      .preview-feature [data-preview-feature-description] { min-height: 1.3rem; margin-top: .3rem; }
+      .preview-spec-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; }
+      .preview-spec-group { overflow: hidden; border: 1px solid #e2e8f0; border-radius: .75rem; }
+      .preview-spec-group h3 { margin: 0; background: #f8fafc; padding: .65rem .8rem; color: #172033; font-size: .82rem; }
+      .preview-spec-row { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr) auto; gap: .5rem; align-items: center; border-top: 1px solid #f1f5f9; padding: .5rem .65rem; color: #475569; font-size: .75rem; }
+      .preview-edit-button { border: 1px solid #e2e8f0; border-radius: .45rem; background: #fff; padding: .3rem .5rem; color: #475569; font-size: .68rem; font-weight: 700; }
+      .preview-edit-button:hover { border-color: #93c5fd; background: #eff6ff; color: #1d4ed8; }
+      .preview-remove-button { border-color: #fecdca; color: #b42318; }
+      .preview-spec-actions { display: flex; justify-content: space-between; gap: .5rem; padding: .45rem .65rem; border-top: 1px solid #f1f5f9; }
+      .seo-counter { justify-self: end; color: #64748b; font-size: .72rem; font-weight: 500; }
+      .repeat-list { display: grid; gap: .65rem; margin-top: .75rem; }
+      .repeater-card { padding: .75rem; }
+      .repeater-card-header { display: flex; justify-content: space-between; align-items: center; gap: .5rem; margin-bottom: .6rem; color: #475569; font-size: .78rem; font-weight: 750; }
+      .repeater-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem; }
+      .repeater-fields input, .repeater-fields textarea { padding: .55rem .65rem; font-size: .82rem; }
+      .repeater-fields textarea { min-height: 64px; }
+      .spec-group { display: grid; gap: .65rem; }
+      .spec-row { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr) auto; gap: .45rem; align-items: start; }
+      .icon-button { min-width: 2.2rem; min-height: 2.2rem; border: 1px solid #e2e8f0; border-radius: .55rem; background: #fff; color: #b42318; font-size: 1rem; }
+      .icon-button:hover { background: #fef3f2; }
+      .preview-specs { margin-top: .6rem; color: #64748b; font-size: .75rem; }
+      .image-toolbar { display: grid; grid-template-columns: minmax(180px, 1fr) minmax(160px, .8fr); gap: .65rem; margin-top: .8rem; }
+      .image-list { display: grid; grid-auto-rows: max-content; grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); align-content: start; gap: .65rem; max-height: 350px; overflow: auto; margin-top: .75rem; padding: .1rem; }
+      .image-option { position: relative; overflow: hidden; border: 1px solid #e2e8f0; border-radius: .7rem; background: #fff; cursor: pointer; }
+      .image-option:has(input:checked) { border-color: #2563eb; box-shadow: 0 0 0 2px rgb(37 99 235 / 14%); }
+      .image-option img { display: block; width: 100%; height: 100px; padding: .4rem; object-fit: contain; background: #f8fafc; }
+      .image-option span { display: block; overflow: hidden; padding: .45rem .5rem; color: #475569; font-size: .68rem; text-overflow: ellipsis; white-space: nowrap; }
+      .image-option input { position: absolute; z-index: 1; top: .45rem; left: .45rem; width: 1rem; height: 1rem; margin: 0; accent-color: #175cd3; }
+      .image-option input[type="radio"] { left: auto; right: .45rem; }
+      .selected-images { margin-top: .6rem; color: #475569; font-size: .8rem; }
+      .image-picker-dialog { width: min(920px, calc(100vw - 2rem)); max-width: none; max-height: 90vh; overflow: hidden; border: 0; border-radius: 1rem; padding: 0; box-shadow: 0 24px 70px rgb(16 24 40 / 25%); }
+      .image-picker-dialog::backdrop { background: rgb(15 23 42 / 55%); backdrop-filter: blur(3px); }
+      .image-picker-content { display: grid; max-height: 90vh; grid-template-rows: auto auto auto minmax(0, 1fr) auto; gap: .75rem; padding: 1.25rem; }
+      .image-picker-header, .image-picker-footer { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+      .image-picker-header h2 { margin: 0; font-size: 1.1rem; }
+      .image-picker-content .image-toolbar { margin-top: 0; }
+      .image-picker-content .image-list { max-height: 52vh; margin-top: 0; }
+      .image-picker-footer { border-top: 1px solid #e2e8f0; padding-top: .75rem; }
+      .form-actions { position: sticky; z-index: 2; bottom: 0; display: flex; justify-content: space-between; align-items: center; gap: .75rem; margin: 1.5rem -1.5rem -1.5rem; padding: 1rem 1.5rem; border-top: 1px solid #e2e8f0; background: rgb(255 255 255 / 94%); backdrop-filter: blur(12px); }
+      .actions-right { display: flex; gap: .6rem; }
+      .button { display: inline-flex; min-height: 2.6rem; align-items: center; justify-content: center; gap: .4rem; border: 1px solid #d0d5dd; border-radius: .65rem; background: #fff; padding: .55rem .9rem; color: #344054; font-size: .84rem; font-weight: 700; text-decoration: none; }
+      .button:hover { background: #f8fafc; }
+      .button.primary { border-color: #175cd3; background: #175cd3; color: #fff; }
+      .button.primary:hover { background: #1849a9; }
+      .button.danger { border-color: #fecdca; color: #b42318; }
+      .button.danger:hover { background: #fef3f2; }
+      .button:disabled { opacity: .6; cursor: wait; }
+      .button.ai-command { border-color: #c4b5fd; background: #f5f3ff; color: #6d28d9; }
+      .button.ai-command:hover { background: #ede9fe; }
+      .ai-dialog { width: min(760px, calc(100vw - 2rem)); max-width: none; max-height: 90vh; overflow: hidden; border: 0; border-radius: 1rem; padding: 0; box-shadow: 0 24px 70px rgb(16 24 40 / 25%); }
+      .ai-dialog::backdrop { background: rgb(15 23 42 / 55%); backdrop-filter: blur(3px); }
+      .ai-dialog-content { display: grid; max-height: 90vh; gap: .9rem; overflow: auto; padding: 1.25rem; }
+      .ai-dialog-header, .ai-dialog-actions { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+      .ai-dialog-header h2 { margin: 0; font-size: 1.1rem; }
+      .ai-dialog-content label { display: grid; gap: .4rem; color: #344054; font-size: .82rem; font-weight: 700; }
+      .ai-dialog-content textarea { min-height: 180px; font-size: .8rem; line-height: 1.55; }
+      .ai-dialog-content #ai-prompt { min-height: 260px; background: #f8fafc; }
+      .ai-dialog-content #ai-brief { min-height: 72px; }
+      .ai-status { min-height: 1.2rem; color: #05603a; font-size: .8rem; }
+      .notice { display: none; margin-bottom: 1rem; border: 1px solid #abefc6; border-radius: .75rem; background: #ecfdf3; padding: .8rem 1rem; color: #05603a; font-size: .88rem; }
+      .notice.error { border-color: #fecdca; background: #fef3f2; color: #b42318; }
+      .empty { padding: 1rem; color: #64748b; text-align: center; font-size: .86rem; }
+      @media (max-width: 560px) {
+        .field-grid { grid-template-columns: 1fr; }
+        .field.full { grid-column: auto; }
+        .product-preview { grid-template-columns: 1fr; }
+        .preview-feature-list, .preview-spec-list { grid-template-columns: 1fr; }
+        .preview-thumbnails { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+        .repeater-fields { grid-template-columns: 1fr; }
+        .spec-row { grid-template-columns: 1fr 1fr auto; }
+        .image-toolbar { grid-template-columns: 1fr; }
+        .page-heading { align-items: start; flex-direction: column; }
+        .page-actions { width: 100%; }
+        .page-actions .button { flex: 1; }
+        .form-actions { margin-right: -1rem; margin-left: -1rem; padding-right: 1rem; padding-left: 1rem; }
+        .actions-right { gap: .35rem; }
+        .button { padding: .5rem .65rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/">RAS SURVEY <span style="font-weight:500;color:#64748b">/ Admin</span></a>
+      <span class="local-badge">LOKAL · TIDAK UNTUK PUBLIK</span>
+    </header>
+    <main>
+      <div class="page-heading">
+        <div>
+          <h1 id="page-title">Editor Produk</h1>
+          <p class="subheading">Perubahan disimpan ke <code>src/data/catalog.json</code>.</p>
+        </div>
+        <div class="page-actions">
+          <button class="button ai-command" id="open-ai-command" type="button">✦ AI Command</button>
+          <a class="button" href="/admin">← Daftar Produk</a>
+        </div>
+      </div>
+      <div class="notice" id="notice" role="status" aria-live="polite"></div>
+      <form class="panel editor" id="product-form">
+          <div class="editor-heading">
+            <h2 id="editor-title">Pilih produk untuk diedit</h2>
+            <span class="hint" id="edit-mode"></span>
+          </div>
+          <div class="live-preview" style="margin-top:.75rem">
+            <div class="preview-label"><span>Pratinjau halaman produk · klik teks untuk mengedit</span><span class="direct-edit-hint">Edit langsung</span></div>
+            <nav class="preview-breadcrumb">Beranda&nbsp; / &nbsp;Produk&nbsp; / &nbsp;<span id="product-preview-breadcrumb">Nama produk</span></nav>
+            <div class="product-preview">
+              <div class="preview-gallery">
+                <button class="preview-image-frame" id="open-image-picker" type="button" aria-label="Pilih atau ubah gambar produk">
+                  <img class="product-preview-image" id="product-preview-image" alt="" hidden />
+                  <span class="preview-image-placeholder" id="preview-image-placeholder">Klik untuk memilih gambar</span>
+                  <span class="preview-image-change" id="preview-image-change" hidden>Ubah gambar</span>
+                </button>
+                <div class="preview-thumbnails" id="product-preview-gallery"></div>
+              </div>
+              <div class="preview-product-copy">
+                <span class="product-preview-name inline-edit" id="product-preview-name" contenteditable="true" role="textbox" aria-label="Edit nama produk" data-placeholder="Nama produk"></span>
+                <h1 class="inline-edit" id="product-preview-heading" contenteditable="true" role="textbox" aria-label="Edit judul halaman" data-placeholder="Judul halaman"></h1>
+                <div class="preview-summary-label">Ringkasan katalog · klik untuk mengedit</div>
+                <div class="product-preview-summary inline-edit" id="product-preview-summary" contenteditable="true" role="textbox" aria-label="Edit deskripsi singkat" data-placeholder="Klik untuk menulis deskripsi singkat produk…"></div>
+                <div class="preview-tags" id="product-preview-tags" contenteditable="true" role="textbox" aria-label="Edit tag produk" aria-multiline="false"></div>
+                <span class="preview-contact">Pesan via WhatsApp</span>
+                <div class="preview-label preview-toolbar-label"><span>Deskripsi detail · klik untuk mengetik</span><span>WYSIWYG</span></div>
+                <div class="rich-toolbar" role="toolbar" aria-label="Format deskripsi produk">
+                  <button class="tool-button" type="button" data-command="bold" aria-label="Tebal"><strong>B</strong></button>
+                  <button class="tool-button" type="button" data-command="italic" aria-label="Miring"><em>I</em></button>
+                  <button class="tool-button" type="button" data-command="formatBlock" data-value="h3" aria-label="Judul bagian">H</button>
+                  <button class="tool-button" type="button" data-command="insertUnorderedList" aria-label="Daftar bullet">• List</button>
+                  <button class="tool-button" type="button" data-command="insertOrderedList" aria-label="Daftar bernomor">1. List</button>
+                  <button class="tool-button" type="button" data-command="createLink" aria-label="Tambah tautan">↗ Link</button>
+                  <button class="tool-button" type="button" data-command="removeFormat" aria-label="Hapus format">Tx</button>
+                </div>
+                <div
+                  class="preview-content product-preview-description"
+                  id="product-preview-description"
+                  contenteditable="true"
+                  role="textbox"
+                  aria-label="Edit deskripsi produk"
+                  aria-multiline="true"
+                  data-placeholder="Klik di sini untuk menulis deskripsi produk… Tekan Enter untuk paragraf baru."
+                ></div>
+              </div>
+            </div>
+            <section class="preview-section" aria-labelledby="preview-features-heading">
+              <div class="preview-section-heading">
+                <h2 id="preview-features-heading">Keunggulan Produk</h2>
+                <button class="preview-edit-button" id="add-feature" type="button">＋ Tambah fitur</button>
+              </div>
+              <div class="preview-feature-list" id="product-preview-features"></div>
+            </section>
+            <section class="preview-section" aria-labelledby="preview-specifications-heading">
+              <div class="preview-section-heading">
+                <h2 id="preview-specifications-heading">Spesifikasi Produk</h2>
+                <button class="preview-edit-button" id="add-spec-group" type="button">＋ Kelompok</button>
+              </div>
+              <div class="preview-spec-list" id="product-preview-specifications"></div>
+            </section>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <label for="category">Kategori *</label>
+              <input id="category" name="category" list="category-options" maxlength="100" required />
+              <datalist id="category-options"></datalist>
+            </div>
+            <div class="field full">
+              <label for="slug">URL produk *</label>
+              <input id="slug" name="slug" placeholder="/produk/katalog/kategori/nama-produk" required />
+              <small>Gunakan format /produk/katalog/kategori/nama-produk; slug harus unik.</small>
+            </div>
+            <div class="field">
+              <label for="title">Judul SEO *</label>
+              <input id="title" name="title" maxlength="200" required />
+              <small><span id="seo-title-count">0/200</span> · pratinjau ikut berubah langsung</small>
+            </div>
+            <div class="field full">
+              <label for="seoDescription">Deskripsi SEO *</label>
+              <textarea id="seoDescription" name="seoDescription" maxlength="500" required></textarea>
+              <small><span id="seo-description-count">0/500</span> · deskripsi meta untuk hasil pencarian.</small>
+            </div>
+            <div class="field full">
+              <label for="seoKeywords">Kata kunci SEO</label>
+              <input id="seoKeywords" name="seoKeywords" placeholder="total station, alat survey, ..." />
+            </div>
+          </div>
+          <input id="name" name="name" type="hidden" />
+          <input id="heading" name="heading" type="hidden" />
+          <input id="description" name="description" type="hidden" />
+          <input id="productDescription" name="productDescription" type="hidden" />
+          <input id="tags" name="tags" type="hidden" />
+          <div class="field full" style="margin-top:1rem">
+            <label>Pratinjau hasil pencarian</label>
+            <div class="seo-preview">
+              <cite id="seo-preview-url">rassurvey.com/produk/katalog/produk</cite>
+              <strong id="seo-preview-title">Judul SEO produk</strong>
+              <p id="seo-preview-description">Deskripsi SEO produk akan tampil di sini.</p>
+            </div>
+          </div>
+
+          <dialog class="image-picker-dialog" id="image-picker-dialog" aria-labelledby="image-picker-title">
+            <div class="image-picker-content">
+              <div class="image-picker-header">
+                <div>
+                  <h2 id="image-picker-title">Pilih gambar produk</h2>
+                  <p class="hint">Pilih gambar utama dengan tombol bulat dan gambar galeri dengan kotak centang.</p>
+                </div>
+                <button class="button" id="close-image-picker" type="button" aria-label="Tutup pilihan gambar">×</button>
+              </div>
+              <div class="image-toolbar">
+                <input id="image-search" type="search" placeholder="Cari nama gambar…" aria-label="Cari gambar" />
+                <select id="image-folder" aria-label="Filter folder gambar"><option value="">Semua folder</option></select>
+              </div>
+              <div class="selected-images" id="selected-images">Belum ada gambar dipilih.</div>
+              <div class="image-list" id="image-list"></div>
+              <div class="image-picker-footer">
+                <span class="hint">Gambar tersedia dari seluruh subfolder <code>public</code>.</span>
+                <button class="button primary" id="done-image-picker" type="button">Selesai</button>
+              </div>
+            </div>
+          </dialog>
+          <dialog class="ai-dialog" id="ai-dialog" aria-labelledby="ai-dialog-title">
+            <div class="ai-dialog-content">
+              <div class="ai-dialog-header">
+                <div>
+                  <h2 id="ai-dialog-title">AI Command Produk</h2>
+                  <p class="hint">Salin prompt ke AI pilihan Anda, lalu tempel jawabannya untuk mengisi editor.</p>
+                </div>
+                <button class="button" id="close-ai-command" type="button" aria-label="Tutup AI Command">×</button>
+              </div>
+              <label for="ai-brief">
+                Carikan saya produk
+                <textarea id="ai-brief" placeholder="Contoh: carikan informasi produk Total Station Ruide RTS-822"></textarea>
+              </label>
+              <label for="ai-prompt">
+                Prompt untuk AI
+                <textarea id="ai-prompt" readonly></textarea>
+              </label>
+              <div class="ai-dialog-actions">
+                <span class="hint">Prompt belum dikirim otomatis ke layanan AI.</span>
+                <button class="button primary" id="copy-ai-prompt" type="button">Salin Prompt</button>
+              </div>
+              <label for="ai-response">
+                Tempel hasil AI
+                <textarea id="ai-response" placeholder="[Judul]&#10;Nama atau judul produk&#10;&#10;[Ringkasan]&#10;Ringkasan produk..."></textarea>
+              </label>
+              <div class="ai-dialog-actions">
+                <span class="ai-status" id="ai-status" role="status" aria-live="polite"></span>
+                <button class="button primary" id="apply-ai-response" type="button">Terapkan ke Editor</button>
+              </div>
+            </div>
+          </dialog>
+          <div class="form-actions">
+            <button class="button danger" id="delete-product" type="button" hidden>Hapus Produk</button>
+            <div class="actions-right">
+              <button class="button" id="cancel-edit" type="button">Batal</button>
+              <button class="button primary" id="save-product" type="submit">Simpan Produk</button>
+            </div>
+          </div>
+      </form>
+    </main>
+    <script type="module" src="/__local-admin/admin.js"></script>
+  </body>
+</html>

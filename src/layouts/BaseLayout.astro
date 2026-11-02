@@ -1,0 +1,61 @@
+---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import "../styles/global.css";
+import seo from "../data/seo.json";
+
+interface Props {
+  route: string;
+  language: "id" | "en";
+  metadata: {
+    title: string;
+    description: string;
+    image?: string;
+    keywords?: string[];
+  };
+}
+
+const { route, language, metadata } = Astro.props;
+const title = metadata.title || seo.site.title;
+const description = metadata.description || seo.site.description;
+const image = metadata.image || seo.site.image;
+const canonicalPath = `${language === "en" ? "/en" : ""}${route === "/" ? "/" : route}`;
+const canonical = new URL(canonicalPath, seo.site.url);
+const languageNeutralRoute = route === "/en" ? "/" : route;
+---
+
+<!doctype html>
+<html lang={language}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta name="keywords" content={(metadata.keywords ?? seo.site.keywords).join(", ")} />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="id" href={new URL(languageNeutralRoute, seo.site.url)} />
+    <link rel="alternate" hreflang="en" href={new URL(`/en${languageNeutralRoute === "/" ? "/" : languageNeutralRoute}`, seo.site.url)} />
+    <link rel="alternate" hreflang="x-default" href={new URL(languageNeutralRoute, seo.site.url)} />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={seo.site.name} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(image, seo.site.url)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(image, seo.site.url)} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <Header route={route} language={language} />
+    <main class="site-content">
+      <slot />
+    </main>
+    <Footer language={language} />
+  </body>
+</html>

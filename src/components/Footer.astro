@@ -1,0 +1,58 @@
+---
+interface Props {
+  language: "id" | "en";
+}
+
+const { language } = Astro.props;
+---
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <h2>{language === "en" ? "Contact Ras Survey" : "Hubungi Ras Survey"}</h2>
+      <p>{language === "en" ? "We are ready to help with your surveying equipment needs." : "Kami siap membantu kebutuhan alat survey Anda."}</p>
+    </div>
+    <div class="footer-contact">
+      <a href="https://wa.me/6281295958196" target="_blank" rel="noopener noreferrer">WhatsApp: +62 812-9595-8196</a>
+      <a href="mailto:mubinmubarok675@gmail.com">mubinmubarok675@gmail.com</a>
+      <span>Jl. Langgar Joglo Raya, Jakarta Barat 11640</span>
+    </div>
+    <form class="contact-form" id="contact-form">
+      <label>
+        <span>{language === "en" ? "Full name" : "Nama lengkap"}</span>
+        <input name="name" type="text" autocomplete="name" required maxlength="120" />
+      </label>
+      <label>
+        <span>Email</span>
+        <input name="email" type="email" autocomplete="email" required maxlength="254" />
+      </label>
+      <label>
+        <span>{language === "en" ? "Your message" : "Pesan Anda"}</span>
+        <textarea name="message" rows="3" required maxlength="1000"></textarea>
+      </label>
+      <button type="submit">{language === "en" ? "Send via WhatsApp" : "Kirim via WhatsApp"}</button>
+    </form>
+  </div>
+  <p class="footer-copyright">© {new Date().getFullYear()} Ras Survey</p>
+</footer>
+
+<script>
+  const contactForm = document.querySelector<HTMLFormElement>("#contact-form");
+  contactForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const name = new FormData(contactForm).get("name");
+    const email = new FormData(contactForm).get("email");
+    const message = new FormData(contactForm).get("message");
+    if (
+      typeof name !== "string" ||
+      typeof email !== "string" ||
+      typeof message !== "string" ||
+      !name.trim() ||
+      !email.trim() ||
+      !message.trim()
+    ) return;
+    const text = `Halo, saya ${name.trim()}.\nEmail: ${email.trim()}\nPesan:\n${message.trim()}`;
+    const url = `https://wa.me/6285721912335?text=${encodeURIComponent(text)}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  });
+</script>

@@ -1,0 +1,108 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ProductDetail from "../components/ProductDetail.astro";
+import seo from "../data/seo.json";
+import HomePage from "../app/page";
+import ProductsPage from "../app/produk/page";
+import TheodolitePage from "../app/produk/all-produk-list/theodolite/page";
+import TotalStationPage from "../app/produk/all-produk-list/total-station/page";
+import catalog from "../data/catalog.json";
+
+export function getStaticPaths() {
+  const productKeywords = (
+    product: (typeof catalog)[number] & { seoKeywords?: string[]; tags?: string[] },
+  ) => {
+    const keywords = [...new Set([...(product.seoKeywords ?? []), ...(product.tags ?? [])])];
+    return keywords.length ? keywords : seo.site.keywords;
+  };
+  const appPages = import.meta.glob<{
+    default: import("react").ComponentType;
+    metadata?: Record<string, unknown>;
+  }>("../app/**/page.tsx", { eager: true });
+  const routeFromModule = (file: string) =>
+    file.replace(/^\.\.\/app/, "").replace(/\/page\.tsx$/, "") || "/";
+  const stringValue = (value: unknown): string | undefined => {
+    if (typeof value === "string") return value;
+    if (value && typeof value === "object" && "default" in value) {
+      const defaultValue = (value as { default?: unknown }).default;
+      return typeof defaultValue === "string" ? defaultValue : undefined;
+    }
+    return undefined;
+  };
+
+  const entries = Object.entries(appPages)
+    .filter(([file]) => !file.includes("/produk/katalog/"))
+    .map(([file, page]) => {
+    const route = routeFromModule(file);
+    const metadata = page.metadata ?? {};
+    const openGraph =
+      typeof metadata.openGraph === "object" && metadata.openGraph !== null
+        ? (metadata.openGraph as Record<string, unknown>)
+        : {};
+    const images = openGraph.images;
+    const firstImage = Array.isArray(images) ? images[0] : undefined;
+    const image =
+      typeof firstImage === "string"
+        ? firstImage
+        : firstImage && typeof firstImage === "object" && "url" in firstImage
+          ? stringValue((firstImage as { url?: unknown }).url)
+          : undefined;
+    const title =
+      stringValue(metadata.title) ??
+      stringValue(openGraph.title) ??
+      seo.pages[route as keyof typeof seo.pages]?.title ??
+      `${route.split("/").filter(Boolean).at(-1)?.replaceAll("-", " ") ?? seo.site.name} | ${seo.site.name}`;
+    const description =
+      stringValue(metadata.description) ??
+      stringValue(openGraph.description) ??
+      seo.pages[route as keyof typeof seo.pages]?.description ??
+      seo.site.description;
+    return {
+      route,
+      page,
+      catalogProduct: undefined,
+      metadata: { title, description, image: image ?? seo.site.image },
+    };
+    });
+
+  const catalogEntries = catalog.map((product) => ({
+    route: product.slug,
+    page: undefined,
+    catalogProduct: product,
+    metadata: {
+      title: product.title,
+      description: product.seoDescription,
+      image: product.image,
+      keywords: productKeywords(product),
+    },
+  }));
+  const allEntries = [...entries, ...catalogEntries];
+
+  return allEntries.map(({ route, page, catalogProduct, metadata }) => ({
+    params: { slug: route === "/" ? undefined : route.slice(1) },
+    props: { route, page, catalogProduct, metadata },
+  }));
+}
+
+const { route, page, catalogProduct, metadata } = Astro.props;
+const Page = page?.default;
+const language = "id";
+---
+
+<BaseLayout route={route} language={language} metadata={metadata}>
+  {
+    catalogProduct ? (
+      <ProductDetail product={catalogProduct} />
+    ) : route === "/" ? (
+      <HomePage client:load />
+    ) : route === "/produk" ? (
+      <ProductsPage client:load />
+    ) : route === "/produk/all-produk-list/theodolite" ? (
+      <TheodolitePage />
+    ) : route === "/produk/all-produk-list/total-station" ? (
+      <TotalStationPage />
+    ) : (
+      Page && <Page />
+    )
+  }
+</BaseLayout>

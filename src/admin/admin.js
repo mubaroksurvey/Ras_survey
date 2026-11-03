@@ -1,3 +1,5 @@
+import { createProductPoster } from "/__local-admin/poster.js";
+
 const $ = (id) => {
   const element = document.getElementById(id);
   if (!element) throw new Error(`Elemen admin "${id}" tidak ditemukan.`);
@@ -13,8 +15,10 @@ let isNew = false;
 let slugWasEdited = false;
 let selectedImages = [];
 let primaryImage = "";
+let previewImageMode = "poster";
 let featureItems = [];
 let specificationGroups = [];
+let isSavingProduct = false;
 
 const allowedRichTags = new Set([
   "A", "B", "BLOCKQUOTE", "BR", "EM", "H2", "H3", "H4", "HR", "I", "LI",
@@ -102,55 +106,88 @@ function buildAiPrompt() {
   const brief = $("ai-brief").value.trim() || $("name").value.trim() || "produk yang ingin dicari";
   const context = $("category").value.trim();
   return [
-    `Carikan saya produk: ${brief}${context ? ` (kategori: ${context})` : ""}.`,
-    "Buat konten halaman produk dalam bahasa Indonesia. Gunakan informasi yang dapat dipastikan; jangan mengarang spesifikasi. Jika data tidak tersedia, tulis 'Belum tersedia'.",
-    "Keluarkan hanya format berikut, tanpa pembuka atau markdown:",
+    "Peran: Anda adalah peneliti produk dan penulis katalog e-commerce yang teliti.",
+    `Cari dan riset produk berikut: ${brief}${context ? ` (kategori: ${context})` : ""}.`,
     "",
+    "Aturan riset:",
+    "- Gunakan pencarian web jika tersedia. Prioritaskan situs resmi produsen, manual/datasheet resmi, lalu distributor resmi.",
+    "- Cocokkan nama/model produk dan jangan mencampur spesifikasi dari model yang berbeda.",
+    "- Jangan mengarang angka, bahan, sertifikasi, isi paket, garansi, stok, harga, atau klaim performa.",
+    "- Jika suatu fakta tidak ditemukan atau sumbernya meragukan, tulis 'Belum tersedia'.",
+    "- Tulis dalam bahasa Indonesia yang jelas, alami, ringkas, dan tidak berlebihan.",
+    "- Fitur harus menjelaskan manfaat yang didukung oleh spesifikasi; hindari klaim promosi yang tidak terbukti.",
+    "- Optimalkan untuk calon pembeli di Indonesia yang mencari tempat membeli produk; utamakan nama produk dan model yang tepat serta maksud pencarian transaksional.",
+    "- Gunakan frasa seperti 'jual [nama/model produk]' secara wajar. Variasikan dengan istilah relevan seperti harga, distributor, spesifikasi, fungsi, atau kategori hanya jika sesuai; jangan menjejalkan kata kunci.",
+    "- Jangan mengarang harga, diskon, stok, status distributor resmi, garansi, lokasi layanan, atau klaim 'termurah/terbaik'. Kata 'harga [produk]' boleh sebagai kata kunci pencarian, tetapi jangan menyebut angka harga yang tidak terverifikasi.",
+    "- Buat judul SEO yang unik dan menarik, idealnya 50-60 karakter, dengan nama/model utama dan maksud jual/beli bila terbaca alami; tambahkan '| Ras Survey' bila masih muat.",
+    "- Buat deskripsi SEO sekitar 140-160 karakter: sebut nama/model, manfaat atau kegunaan terverifikasi, lalu ajakan menghubungi Ras Survey untuk menanyakan pembelian tanpa menjanjikan harga atau stok.",
+    "- Susun 8-12 kata kunci SEO yang spesifik dan berbeda, termasuk frasa jual produk, nama/model, variasi kategori, dan beberapa kueri terkait pembelian; hindari pengulangan serta kata kunci yang tidak relevan.",
+    "- Masukkan frasa utama secara alami pada ringkasan dan awal deskripsi, lalu gunakan istilah terkait pada isi tanpa mengulang berlebihan.",
+    "- Sertakan tautan sumber yang benar-benar dibuka pada bagian [Sumber] agar bisa diperiksa sebelum hasil diterapkan.",
+    "",
+    "FORMAT JAWABAN WAJIB:",
+    "- Seluruh jawaban harus berada di dalam tepat satu fenced code block Markdown berlabel text.",
+    "- Baris pertama jawaban harus persis: ```text",
+    "- Baris terakhir jawaban harus persis: ```",
+    "- Jangan menulis satu karakter pun, salam, penjelasan, atau markdown di luar blok tersebut.",
+    "- Di dalam blok gunakan teks polos saja: jangan gunakan heading Markdown (#), bullet Markdown (* atau -), bold, tabel, atau format lain.",
+    "- Pertahankan setiap judul bagian dalam tanda kurung siku persis seperti format di bawah.",
+    "",
+    "```text",
     "[Nama Produk]",
-    "Nama produk yang jelas",
+    "Isi nama produk dan model yang teridentifikasi",
     "",
     "[Judul]",
-    "Judul halaman produk",
+    "Isi judul halaman produk yang jelas",
     "",
     "[Ringkasan]",
-    "Ringkasan singkat untuk katalog",
+    "Isi ringkasan katalog dalam 1-2 kalimat",
     "",
     "[Deskripsi]",
-    "Deskripsi detail produk, boleh beberapa paragraf",
+    "Isi deskripsi produk dalam 2-4 paragraf. Jelaskan kegunaan dan hal penting yang terverifikasi.",
     "",
     "[Judul SEO]",
-    "Judul SEO",
+    "Isi judul SEO jual/beli yang relevan dan alami, idealnya 50-60 karakter",
     "",
     "[Deskripsi SEO]",
-    "Deskripsi meta untuk mesin pencari",
+    "Isi deskripsi meta sekitar 140-160 karakter: produk, manfaat terverifikasi, dan ajakan menanyakan pembelian",
     "",
     "[Kata Kunci SEO]",
-    "kata kunci 1, kata kunci 2",
+    "Isi 8-12 kata kunci jual/beli spesifik dan relevan, dipisahkan koma",
     "",
     "[Tag]",
-    "tag 1, tag 2",
+    "Isi tag kategori atau kegunaan, dipisahkan koma",
     "",
     "[Fitur]",
-    "Judul: nama fitur",
-    "Deskripsi: penjelasan fitur",
+    "Judul: nama fitur terverifikasi",
+    "Deskripsi: penjelasan singkat dan manfaat yang didukung sumber",
     "",
-    "Judul: nama fitur berikutnya",
-    "Deskripsi: penjelasan fitur berikutnya",
+    "Pisahkan setiap fitur dengan satu baris kosong. Berikan 3-5 fitur jika sumber mendukung.",
     "",
     "[Spesifikasi]",
-    "Kelompok: nama kelompok",
-    "Label | Nilai",
-    "Label | Nilai",
+    "Kelompok: nama kelompok spesifikasi",
+    "Label | Nilai dan satuan",
+    "Label | Nilai dan satuan",
+    "",
+    "Pisahkan kelompok spesifikasi dengan satu baris kosong. Cantumkan hanya data yang terverifikasi.",
+    "",
+    "[Sumber]",
+    "Nama sumber | URL halaman atau manual resmi yang benar-benar diperiksa",
+    "```",
   ].join("\n");
 }
 
 function parseAiSections(value) {
   const sections = new Map();
-  const headers = [...value.matchAll(/^\s*\[([^\]]+)\]\s*$/gm)];
+  const content = value.trim().replace(
+    /^```(?:text|plaintext)?[ \t]*\r?\n([\s\S]*?)\r?\n```[ \t]*$/i,
+    "$1",
+  );
+  const headers = [...content.matchAll(/^\s*\[([^\]]+)\]\s*$/gm)];
   headers.forEach((header, index) => {
     const start = header.index + header[0].length;
-    const end = headers[index + 1]?.index ?? value.length;
-    sections.set(header[1].trim().toLowerCase(), value.slice(start, end).trim());
+    const end = headers[index + 1]?.index ?? content.length;
+    sections.set(header[1].trim().toLowerCase(), content.slice(start, end).trim());
   });
   return sections;
 }
@@ -231,8 +268,26 @@ function renderPreview() {
   $("seo-description-count").textContent = `${$("seoDescription").value.length}/500`;
   $("seo-preview-title").title = `${seoTitle.length}/200 karakter`;
   $("seo-preview-description").title = `${seoDescription.length}/500 karakter`;
+  const posterFeatures = featureItems
+    .filter((feature) => feature.title.trim() || feature.description.trim())
+    .map((feature) => [feature.title.trim(), feature.description.trim()].filter(Boolean).join(": "))
+    .slice(0, 3);
+  if (!posterFeatures.length) {
+    specificationGroups.some((group) => {
+      posterFeatures.push(...group.rows.map((row) => [row.label.trim(), row.value.trim()].filter(Boolean).join(": ")).filter(Boolean));
+      return posterFeatures.length >= 3;
+    });
+  }
+  const poster = createProductPoster({
+    heading,
+    image: primaryImage,
+    features: posterFeatures,
+    className: "product-detail-poster",
+  });
+  $("product-preview-poster").replaceChildren(poster);
+  $("product-preview-poster").hidden = previewImageMode !== "poster";
   const image = $("product-preview-image");
-  if (primaryImage) {
+  if (primaryImage && previewImageMode === "image") {
     image.src = primaryImage;
     image.alt = heading;
     image.hidden = false;
@@ -241,18 +296,33 @@ function renderPreview() {
   } else {
     image.removeAttribute("src");
     image.hidden = true;
-    $("preview-image-placeholder").hidden = false;
+    $("preview-image-placeholder").hidden = true;
     $("preview-image-change").hidden = true;
   }
   const gallery = $("product-preview-gallery");
   gallery.replaceChildren();
-  selectedImages.forEach((imagePath) => {
+  const posterButton = document.createElement("button");
+  posterButton.type = "button";
+  posterButton.className = "preview-thumbnail";
+  posterButton.classList.toggle("selected", previewImageMode === "poster");
+  posterButton.setAttribute("aria-label", "Tampilkan poster produk");
+  posterButton.setAttribute("aria-pressed", String(previewImageMode === "poster"));
+  posterButton.dataset.previewPoster = "true";
+  posterButton.append(createProductPoster({
+    heading,
+    image: primaryImage,
+    features: posterFeatures,
+    className: "product-poster-thumb",
+  }));
+  gallery.append(posterButton);
+  const orderedImages = [...new Set([primaryImage, ...selectedImages].filter(Boolean))];
+  orderedImages.forEach((imagePath) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "preview-thumbnail";
-    button.classList.toggle("selected", imagePath === primaryImage);
+    button.classList.toggle("selected", previewImageMode === "image" && imagePath === primaryImage);
     button.setAttribute("aria-label", `Jadikan ${imagePath} gambar utama`);
-    button.setAttribute("aria-pressed", String(imagePath === primaryImage));
+    button.setAttribute("aria-pressed", String(previewImageMode === "image" && imagePath === primaryImage));
     button.dataset.previewImage = imagePath;
     const thumbnail = document.createElement("img");
     thumbnail.src = imagePath;
@@ -359,6 +429,32 @@ function renderPreview() {
     section.append(actions);
     specificationList.append(section);
   });
+  updateSaveAvailability();
+}
+
+function missingProductRequirements() {
+  const requiredFields = [
+    ["name", "Nama produk"],
+    ["category", "Kategori"],
+    ["slug", "URL produk"],
+    ["description", "Ringkasan katalog"],
+    ["title", "Judul SEO"],
+    ["seoDescription", "Deskripsi SEO"],
+  ];
+  const missing = requiredFields
+    .filter(([id]) => !$(id).value.trim())
+    .map(([, label]) => label);
+  if (!primaryImage || !selectedImages.includes(primaryImage)) missing.push("Foto utama");
+  return missing;
+}
+
+function updateSaveAvailability() {
+  const missing = missingProductRequirements();
+  const saveButton = $("save-product");
+  saveButton.disabled = isSavingProduct || missing.length > 0;
+  $("save-requirements").textContent = missing.length
+    ? `Lengkapi dulu: ${missing.join(", ")}.`
+    : "";
 }
 
 function slugPart(value) {
@@ -407,6 +503,7 @@ function fillForm(product) {
   specificationGroups = structuredClone(product.specifications ?? []);
   selectedImages = [...new Set(product.gallery?.length ? product.gallery : [product.image])];
   primaryImage = product.image || selectedImages[0] || "";
+  previewImageMode = "poster";
   $("editor-title").textContent = "Edit produk";
   $("edit-mode").textContent = product.slug;
   $("delete-product").hidden = false;
@@ -428,6 +525,7 @@ function startNewProduct() {
   slugWasEdited = false;
   selectedImages = [];
   primaryImage = "";
+  previewImageMode = "poster";
   form.reset();
   $("product-preview-description").innerHTML = "";
   $("product-preview-name").textContent = "";
@@ -536,7 +634,7 @@ function formProduct() {
     description,
     productDescription: productDescription || textToHtml(description),
     image: primaryImage,
-    gallery: selectedImages,
+    gallery: [...new Set([primaryImage, ...selectedImages].filter(Boolean))],
     title: String(data.get("title") ?? "").trim(),
     seoDescription: String(data.get("seoDescription") ?? "").trim(),
     seoKeywords: String(data.get("seoKeywords") ?? "").split(",").map((item) => item.trim()).filter(Boolean),
@@ -618,8 +716,14 @@ function applyAiResponse() {
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const saveButton = $("save-product");
-  saveButton.disabled = true;
+  const missing = missingProductRequirements();
+  if (missing.length) {
+    updateSaveAvailability();
+    showNotice(`Belum bisa menyimpan. Lengkapi: ${missing.join(", ")}.`, true);
+    return;
+  }
+  isSavingProduct = true;
+  updateSaveAvailability();
   try {
     const product = formProduct();
     if (!product.image || !product.gallery.length) {
@@ -639,7 +743,8 @@ form.addEventListener("submit", async (event) => {
   } catch (error) {
     showNotice(error instanceof Error ? error.message : "Gagal menyimpan produk.", true);
   } finally {
-    saveButton.disabled = false;
+    isSavingProduct = false;
+    updateSaveAvailability();
   }
 });
 
@@ -735,10 +840,15 @@ $("product-preview-tags").addEventListener("input", () => {
 });
 $("product-preview-tags").addEventListener("blur", renderPreview);
 $("product-preview-gallery").addEventListener("click", (event) => {
-  const button = event.target.closest("[data-preview-image]");
+  const button = event.target.closest("[data-preview-image], [data-preview-poster]");
   if (!button) return;
-  primaryImage = button.dataset.previewImage;
-  renderImages();
+  if (button.dataset.previewPoster) {
+    previewImageMode = "poster";
+  } else {
+    primaryImage = button.dataset.previewImage;
+    previewImageMode = "image";
+    renderImages();
+  }
   renderPreview();
 });
 $("product-preview-features").addEventListener("input", (event) => {

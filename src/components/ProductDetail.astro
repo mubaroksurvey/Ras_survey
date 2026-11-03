@@ -1,5 +1,6 @@
 ---
 import { sanitizeRichText } from "../utils/sanitizeRichText";
+import ProductArtwork from "./ProductArtwork.astro";
 
 interface ProductFeature {
   title: string;
@@ -29,6 +30,12 @@ interface Props {
 }
 
 const { product, language = "id" } = Astro.props;
+const posterFeatures = product.features.length
+  ? product.features.slice(0, 3).map((feature) => `${feature.title}: ${feature.description}`)
+  : product.specifications
+      .flatMap((group) => group.rows.map((row) => `${row.label}: ${row.value}`))
+      .slice(0, 3);
+const additionalImages = [...new Set(product.gallery)].filter((image) => image !== product.image);
 const message =
   language === "en"
     ? `Hello, I would like to ask about ${product.name}`
@@ -47,32 +54,47 @@ const whatsappUrl = `https://wa.me/6281295958196?text=${encodeURIComponent(messa
 
   <div class="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-12">
     <div class="space-y-3">
-      <div class="flex aspect-square items-center justify-center overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="product-detail-view overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <ProductArtwork heading={product.heading} image={product.image} features={posterFeatures} />
         <img
-          class="product-main-image max-h-full w-full object-contain"
+          class="product-main-image"
           src={product.image}
           alt={product.heading}
           width="640"
           height="640"
           fetchpriority="high"
+          hidden
         />
       </div>
-      {product.gallery.length > 1 && (
-        <div class="grid grid-cols-5 gap-2 sm:grid-cols-6">
-          {product.gallery.map((image, index) => (
+      <div class="grid grid-cols-5 gap-2 sm:grid-cols-6">
+          <button
+            class="product-thumbnail selected"
+            type="button"
+            data-kind="poster"
+            aria-label="Tampilkan poster produk"
+            aria-pressed="true"
+          >
+            <ProductArtwork
+              heading={product.heading}
+              image={product.image}
+              features={posterFeatures}
+              variant="thumbnail"
+            />
+          </button>
+          {[product.image, ...additionalImages].map((image, index) => (
             <button
-              class:list={["product-thumbnail", image === product.image && "selected"]}
+              class="product-thumbnail"
               type="button"
+              data-kind="image"
               data-image={image}
               data-alt={`${product.heading} - ${index + 1}`}
-              aria-label={`Tampilkan gambar ${index + 1}`}
-              aria-pressed={image === product.image ? "true" : "false"}
+              aria-label={`Tampilkan foto produk ${index + 1}`}
+              aria-pressed="false"
             >
               <img src={image} alt="" loading="lazy" width="100" height="100" />
             </button>
           ))}
-        </div>
-      )}
+      </div>
     </div>
 
     <div>
@@ -174,18 +196,41 @@ const whatsappUrl = `https://wa.me/6281295958196?text=${encodeURIComponent(messa
     height: 100%;
     object-fit: contain;
   }
+
+  .product-detail-view > .product-detail-poster {
+    border-radius: 0;
+  }
+
+  .product-main-image:not([hidden]) {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: contain;
+    padding: 1.5rem;
+  }
 </style>
 
 <script>
   document.querySelectorAll<HTMLButtonElement>(".product-thumbnail").forEach((button) => {
     button.addEventListener("click", () => {
-      const image = button.dataset.image;
-      const mainImage = button
-        .closest("article")
-        ?.querySelector<HTMLImageElement>(".product-main-image");
-      if (!image || !mainImage) return;
-      mainImage.src = image;
-      mainImage.alt = button.dataset.alt ?? "";
+      const view = button.closest("article")?.querySelector<HTMLElement>(".product-detail-view");
+      const mainPoster = view?.querySelector<HTMLElement>(".product-detail-poster");
+      const mainImage = view?.querySelector<HTMLImageElement>(".product-main-image");
+      if (!view || !mainPoster || !mainImage) return;
+
+      const showPoster = button.dataset.kind === "poster";
+      if (showPoster) {
+        mainPoster.hidden = false;
+        mainImage.hidden = true;
+      } else {
+        const image = button.dataset.image;
+        if (!image) return;
+        mainImage.src = image;
+        mainImage.alt = button.dataset.alt ?? "";
+        mainImage.hidden = false;
+        mainPoster.hidden = true;
+      }
+
       button
         .parentElement
         ?.querySelectorAll<HTMLButtonElement>(".product-thumbnail")

@@ -1,0 +1,32 @@
+---
+interface Props {
+  heading: string;
+  image: string;
+  features: string[];
+  variant?: "detail" | "thumbnail";
+}
+
+const { heading, image, features, variant = "detail" } = Astro.props;
+---
+
+<div class:list={["product-poster", variant === "detail" ? "product-detail-poster" : "product-poster-thumb"]}>
+  <img class="product-poster-logo" src="/icon-no-bg.png" alt="" aria-hidden="true" />
+  <div class="product-poster-copy">
+    <h3>{heading}</h3>
+    {features.length > 0 && (
+      <ul>
+        {features.map((feature) => (
+          <li>
+            <span class="product-poster-check" aria-hidden="true"></span>
+            <span>{feature}</span>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+  <img class="product-poster-image" src={image} alt="" aria-hidden="true" />
+  <div class="product-poster-contact">
+    <span>www.rassurvey.com</span>
+    <span>WhatsApp 0812-9595-8196</span>
+  </div>
+</div>

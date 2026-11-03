@@ -1,7 +1,7 @@
 import React, { type JSX } from "react";
 import { useMemo, useState } from "react";
 import Link from "@/compat/LegacyLink";
-import Image from "@/compat/LegacyImage";
+import ProductPoster from "@/components/ProductPoster";
 import { FiSearch, FiChevronDown, FiGrid } from "react-icons/fi";
 import {
   HiOutlineViewGrid,
@@ -265,7 +265,7 @@ export default function ProductsPage({ isEnglish = false }: Props) {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 mt-8">
+          <div className="product-poster-grid mt-8">
             {filteredProducts.map((p) => (
               <motion.div
                 key={p.id}
@@ -280,38 +280,24 @@ export default function ProductsPage({ isEnglish = false }: Props) {
                   className="group h-full block overflow-hidden rounded-2xl border border-gray-200 bg-white/95 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1 hover:border-blue-300"
                 >
                   <div className="flex flex-col h-full">
-                    <div className="aspect-square overflow-hidden rounded-t-2xl relative">
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent z-10" />
-                      <div className="relative w-full h-full">
-                        <Image
-                          src={p.image}
-                          alt={p.name}
-                          fill
-                          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                          quality={75}
-                          onError={() => {
-                            const img = document.getElementById(`product-image-${p.id}`) as HTMLImageElement;
-                            if (img) {
-                              img.src = '/no-image.jpg';
-                              img.style.objectFit = 'contain';
-                              img.style.padding = '2rem';
-                            }
-                          }}
-                          id={`product-image-${p.id}`}
-                          className="object-cover group-hover:scale-110 transition-transform duration-500"
-                        />
-                      </div>
-                    </div>
-                    <div className="p-5 flex flex-col flex-1">
-                      <div className="flex-1">
-                        <h2 className="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors line-clamp-2">
-                          {p.name}
-                        </h2>
-                        <p className="text-sm text-gray-500 mt-2 line-clamp-2">
-                          {p.description}
-                        </p>
-                      </div>
-                      <span className="mt-4 inline-flex items-center justify-center bg-white text-black text-sm font-medium px-5 py-2.5 rounded-xl border border-gray-200 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all group-hover:bg-blue-500 group-hover:text-white group-hover:border-blue-500">
+                    <ProductPoster
+                      name={p.name}
+                      heading={p.heading}
+                      image={p.image}
+                      features={p.features}
+                      showFeatures={false}
+                      imageId={`product-image-${p.id}`}
+                      onImageError={() => {
+                        const img = document.getElementById(`product-image-${p.id}`) as HTMLImageElement;
+                        if (img) {
+                          img.src = "/no-image.jpg";
+                          img.style.objectFit = "contain";
+                          img.style.padding = "2rem";
+                        }
+                      }}
+                    />
+                    <div className="p-3">
+                      <span className="inline-flex w-full items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-black transition-all group-hover:border-blue-500 group-hover:bg-blue-500 group-hover:text-white">
                         {isEnglish ? "Buy Now" : "Beli Sekarang"}
                       </span>
                     </div>

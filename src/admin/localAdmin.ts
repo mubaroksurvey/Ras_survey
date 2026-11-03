@@ -319,5 +319,15 @@ export async function handleLocalAdminRequest(request: Request, clientAddress: s
     const script = await readFile(resolve(root, "src/admin/admin-list.js"), "utf8");
     return response(script, 200, "text/javascript; charset=utf-8");
   }
+  if (url.pathname === "/__local-admin/poster.js") {
+    if (request.method !== "GET") return response("Method not allowed", 405, "text/plain; charset=utf-8");
+    const script = await readFile(resolve(root, "src/admin/poster.js"), "utf8");
+    return response(script, 200, "text/javascript; charset=utf-8");
+  }
+  if (url.pathname === "/__local-admin/poster.css") {
+    if (request.method !== "GET") return response("Method not allowed", 405, "text/plain; charset=utf-8");
+    const stylesheet = await readFile(resolve(root, "src/admin/poster.css"), "utf8");
+    return response(stylesheet, 200, "text/css; charset=utf-8");
+  }
   return handleApi(request, url.pathname);
 }

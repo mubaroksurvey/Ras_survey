@@ -3,12 +3,18 @@
     "slug": "/produk/katalog/Alat-Curah-Hujan/Jual-Alat-Curah-Hujan-OBS-Steel",
     "category": "Alat Curah Hujan",
     "name": "Alat Curah Hujan OBS Steel",
+    "heading": "Ombrometer OBS Steel",
     "description": "Alat pengukur curah hujan OBS Steel adalah solusi ideal untuk pengukuran curah hujan yang akurat dan tahan lama. Dengan desain yang kokoh dan material stainless steel, alat ini dirancang untuk penggunaan jangka panjang di berbagai kondisi cuaca.",
+    "productDescription": "<p>OBS Steel adalah alat ukur curah hujan manual standar BMKG yang terbuat dari stainless steel berkualitas tinggi. Dirancang untuk pengukuran curah hujan yang akurat dan tahan lama, ideal untuk stasiun meteorologi, pertanian, dan penelitian hidrologi.</p>",
     "image": "/img/alat-curah/obs-stainls.png",
+    "gallery": [
+      "/img/alat-curah/obs-stainls.png",
+      "/img/alat-deteksi-emas/csi-250.jpg"
+    ],
     "title": "Jual Alat Curah Hujan OBS Steel | Ras Survey",
     "seoDescription": "Ombrometer OBS Stainless Steel standar BMKG dengan luas penampang 100 cm², bahan stainless steel berkualitas. Dapatkan spesifikasi dan harga terbaik di Ras Survey.",
-    "heading": "Ombrometer OBS Steel",
-    "productDescription": "OBS Steel adalah alat ukur curah hujan manual standar BMKG yang terbuat dari stainless steel berkualitas tinggi. Dirancang untuk pengukuran curah hujan yang akurat dan tahan lama, ideal untuk stasiun meteorologi, pertanian, dan penelitian hidrologi.",
+    "seoKeywords": [],
+    "tags": [],
     "features": [
       {
         "title": "Luas Penampang",
@@ -84,9 +90,6 @@
           }
         ]
       }
-    ],
-    "gallery": [
-      "/img/alat-curah/obs-stainls.png"
     ]
   },
   {

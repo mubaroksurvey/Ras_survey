@@ -4,8 +4,10 @@ export interface CatalogProduct {
   slug: string;
   category: string;
   name: string;
+  heading: string;
   description: string;
   image: string;
+  features: string[];
 }
 
 function isCatalogProduct(value: unknown): value is CatalogProduct {
@@ -15,8 +17,11 @@ function isCatalogProduct(value: unknown): value is CatalogProduct {
     typeof product.slug === "string" &&
     typeof product.category === "string" &&
     typeof product.name === "string" &&
+    typeof product.heading === "string" &&
     typeof product.description === "string" &&
-    typeof product.image === "string"
+    typeof product.image === "string" &&
+    Array.isArray(product.features) &&
+    product.features.every((feature) => typeof feature === "string")
   );
 }
 

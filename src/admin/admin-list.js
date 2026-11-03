@@ -1,3 +1,5 @@
+import { createProductPoster } from "/__local-admin/poster.js";
+
 const $ = (id) => {
   const element = document.getElementById(id);
   if (!element) throw new Error(`Elemen admin "${id}" tidak ditemukan.`);
@@ -63,12 +65,20 @@ function renderProducts() {
     row.className = "product-row";
     const imageFrame = document.createElement("div");
     imageFrame.className = "product-image-frame";
-    const image = document.createElement("img");
-    image.className = "product-image";
-    image.src = product.image;
-    image.alt = product.name;
-    image.loading = "lazy";
-    imageFrame.append(image);
+    const posterFeatures = (product.features ?? [])
+      .map((feature) => [feature.title, feature.description].filter(Boolean).join(": "))
+      .filter(Boolean);
+    if (!posterFeatures.length) {
+      for (const group of product.specifications ?? []) {
+        posterFeatures.push(...group.rows.map((row) => [row.label, row.value].filter(Boolean).join(": ")).filter(Boolean));
+        if (posterFeatures.length >= 3) break;
+      }
+    }
+    imageFrame.append(createProductPoster({
+      heading: product.heading || product.name,
+      image: product.image,
+      features: posterFeatures.slice(0, 2),
+    }));
 
     const info = document.createElement("div");
     info.className = "product-info";

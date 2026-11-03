@@ -8,8 +8,12 @@ const products = catalog
     id: index + 1,
     slug: product.slug.replace(/^\/produk/, ""),
     name: product.name,
+    heading: product.heading,
     description: product.description,
     image: product.image,
+    features: product.features
+      .slice(0, 2)
+      .map(({ description }) => description),
   }));
 
 // ✅ Structured Data Schema untuk Rich Snippet (Rating 5 Bintang)
@@ -25,7 +29,7 @@ const structuredData = {
     name: "RAS Survey",
     logo: {
       "@type": "ImageObject",
-      url: "https://www.rassurvey.com/logo.png",
+      url: "https://www.rassurvey.com/icon-no-bg.png",
     },
   },
   aggregateRating: {
@@ -110,8 +114,12 @@ export default function Page({ isEnglish = false }: { isEnglish?: boolean }) {
     ? products.map((product) => ({
         ...product,
         name: translations[product.name as keyof typeof translations] ?? product.name,
+        heading: translations[product.heading as keyof typeof translations] ?? product.heading,
         description:
           translations[product.description as keyof typeof translations] ?? product.description,
+        features: product.features.map(
+          (feature) => translations[feature as keyof typeof translations] ?? feature,
+        ),
       }))
     : products;
 

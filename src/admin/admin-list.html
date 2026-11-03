@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow, noarchive" />
     <title>Admin Produk Lokal | Ras Survey</title>
+    <link rel="stylesheet" href="/__local-admin/poster.css" />
     <style>
       :root {
         color-scheme: light;
@@ -20,7 +21,9 @@
       button, input { font: inherit; }
       button, a { cursor: pointer; }
       .topbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem clamp(1rem, 3vw, 2.5rem); background: #fff; border-bottom: 1px solid #e2e8f0; }
-      .brand { color: #101828; font-size: 1.1rem; font-weight: 850; letter-spacing: -.03em; text-decoration: none; }
+      .brand { display: inline-flex; align-items: center; gap: .65rem; color: #101828; font-size: 1rem; font-weight: 750; letter-spacing: -.03em; text-decoration: none; }
+      .brand img { width: 3rem; height: 2.7rem; object-fit: contain; }
+      .brand span { color: #64748b; font-weight: 500; }
       .local-badge { border-radius: 999px; padding: .4rem .7rem; color: #05603a; background: #ecfdf3; font-size: .78rem; font-weight: 750; }
       main { max-width: 1500px; margin: 0 auto; padding: 1.5rem clamp(1rem, 3vw, 2.5rem) 4rem; }
       h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.1rem); letter-spacing: -.04em; }
@@ -40,8 +43,8 @@
       .new-product-card strong { font-size: .9rem; }
       .new-product-card span:last-child { color: #64748b; font-size: .76rem; }
       .product-image-frame { aspect-ratio: 1; overflow: hidden; background: #fff; }
-      .product-image { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
-      .product-row:hover .product-image { transform: scale(1.04); }
+      .product-image { display: block; width: 100%; height: 100%; object-fit: cover; }
+      .product-image-frame .product-poster { width: 100%; height: 100%; }
       .product-info { display: flex; min-width: 0; flex: 1; flex-direction: column; padding: .85rem; }
       .product-category { color: #2563eb; font-size: .7rem; font-weight: 700; }
       .product-info strong { display: -webkit-box; overflow: hidden; margin-top: .25rem; color: #172033; font-size: .9rem; line-height: 1.4; overflow-wrap: anywhere; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
@@ -82,7 +85,7 @@
   </head>
   <body>
     <header class="topbar">
-      <a class="brand" href="/">RAS SURVEY <span style="font-weight:500;color:#64748b">/ Admin</span></a>
+      <a class="brand" href="/" aria-label="Ras Survey, kembali ke beranda"><img src="/icon-no-bg.png" alt="" /><span>/ Admin</span></a>
       <span class="local-badge">LOKAL · TIDAK UNTUK PUBLIK</span>
     </header>
     <main>

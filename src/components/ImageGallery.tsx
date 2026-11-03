@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import Image from '@/compat/LegacyImage';
+import ProductPoster from '@/components/ProductPoster';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
 interface ImageGalleryProps {
@@ -30,14 +31,10 @@ export default function ImageGallery({ images, alt }: ImageGalleryProps) {
   return (
     <div className="flex flex-col gap-3 sm:gap-4">
       {/* Main Image Display */}
-      <div className="relative bg-white rounded-lg sm:rounded-xl border shadow-md overflow-hidden aspect-square flex items-center justify-center p-2 sm:p-4">
-        <Image
-          src={images[currentIndex]}
-          alt={`${alt} - ${currentIndex + 1}`}
-          width={500}
-          height={500}
-          className="w-full h-full object-contain"
-          priority
+      <div className="relative rounded-lg sm:rounded-xl border shadow-md overflow-hidden">
+        <ProductPoster
+          name={`${alt} - ${currentIndex + 1}`}
+          image={images[currentIndex]}
         />
 
         {/* Navigation Arrows */}
@@ -75,7 +72,7 @@ export default function ImageGallery({ images, alt }: ImageGalleryProps) {
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`relative flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 md:w-full md:h-20 rounded-lg border-2 overflow-hidden transition-all active:opacity-75 ${
+              className={`product-image-watermark relative flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 md:w-full md:h-20 rounded-lg border-2 overflow-hidden transition-all active:opacity-75 ${
                 currentIndex === index
                   ? 'border-blue-600 shadow-lg'
                   : 'border-gray-200 hover:border-gray-400 hover:shadow-md'

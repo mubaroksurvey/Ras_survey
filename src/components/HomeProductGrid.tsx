@@ -1,6 +1,6 @@
 
-import Image from '@/compat/LegacyImage';
 import Link from '@/compat/LegacyLink';
+import ProductPoster from '@/components/ProductPoster';
 import { useMemo } from 'react';
 import { useCatalogProducts } from '@/hooks/useCatalogProducts';
 
@@ -28,7 +28,7 @@ export default function HomeProductGrid({ isEnglish = false }: Props) {
         {/* Grid Produk */}
         {loading ? <p className="col-span-full text-center text-gray-500">{isEnglish ? 'Loading products...' : 'Memuat produk...'}</p> : null}
         {error ? <p className="col-span-full text-center text-red-600" role="alert">{isEnglish ? 'Failed to load product catalog:' : 'Katalog produk gagal dimuat:'} {error}</p> : null}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
+        <div className="product-poster-grid">
           {totalStationProducts.slice(0, 8).map((p) => (
             <Link
               key={p.id}
@@ -36,26 +36,15 @@ export default function HomeProductGrid({ isEnglish = false }: Props) {
               className="group h-full block overflow-hidden rounded-xl border border-gray-200 bg-white transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
             >
               <div className="flex flex-col h-full">
-                <div className="aspect-square overflow-hidden">
-                  <Image
-                    src={p.image}
-                    alt={p.name}
-                    width={300}
-                    height={300}
-                    className="w-full h-full object-contain p-2 transition-transform duration-500 group-hover:scale-110"
-                    priority
-                  />
-                </div>
-                <div className="p-3 flex flex-col flex-1">
-                  <div className="flex-1">
-                    <h3 className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors line-clamp-2">
-                      {p.name}
-                    </h3>
-                    <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-                      {p.description}
-                    </p>
-                  </div>
-                  <span className="mt-4 inline-flex items-center justify-center bg-white text-black text-sm font-medium px-5 py-2.5 rounded-xl border border-gray-200 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all group-hover:bg-blue-500 group-hover:text-white group-hover:border-blue-500">
+                <ProductPoster
+                  name={p.name}
+                  heading={p.heading}
+                  image={p.image}
+                  features={p.features}
+                  showFeatures={false}
+                />
+                <div className="p-3">
+                  <span className="inline-flex w-full items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-black transition-all group-hover:border-blue-500 group-hover:bg-blue-500 group-hover:text-white">
                     {isEnglish ? 'Buy Now' : 'Beli Sekarang'}
                   </span>
                 </div>

@@ -1,0 +1,221 @@
+.product-poster {
+  position: relative;
+  isolation: isolate;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 1rem;
+  background-color: #fff;
+  background-image: linear-gradient(135deg, #eaf3f1 0%, #f3f7f5 54%, #fff 54%);
+}
+
+.product-poster::after {
+  position: absolute;
+  z-index: 1;
+  top: 19%;
+  right: -17%;
+  width: 76%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgb(219 235 231 / 48%);
+  content: "";
+  pointer-events: none;
+}
+
+.product-poster-logo {
+  position: absolute;
+  z-index: 3;
+  top: 4%;
+  left: 4%;
+  width: 32%;
+  height: 18%;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.product-poster-copy {
+  position: absolute;
+  z-index: 3;
+  top: 32%;
+  left: 6%;
+  width: 44%;
+  color: #101d5a;
+}
+
+.product-poster-copy h3 {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0 0 .75rem;
+  font-size: clamp(.95rem, 1.5vw, 1.2rem);
+  font-weight: 800;
+  line-height: 1.2;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.product-poster-copy ul {
+  display: grid;
+  gap: .45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.product-poster-copy li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: .4rem;
+  font-size: clamp(.68rem, 1vw, .8rem);
+  line-height: 1.3;
+}
+
+.product-poster-copy li > span:last-child {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.product-poster-check {
+  position: relative;
+  width: 1rem;
+  height: 1rem;
+  margin-top: .05rem;
+  border-radius: 50%;
+  background: #ef9a2d;
+}
+
+.product-poster-check::after {
+  position: absolute;
+  top: .25rem;
+  left: .3rem;
+  width: .32rem;
+  height: .18rem;
+  border-bottom: 1.5px solid white;
+  border-left: 1.5px solid white;
+  content: "";
+  transform: rotate(-45deg);
+}
+
+.product-poster-image {
+  position: absolute;
+  z-index: 2;
+  top: 16%;
+  right: 1%;
+  width: 55%;
+  height: 72%;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  transition: transform 250ms ease;
+}
+
+.product-poster-contact {
+  position: absolute;
+  z-index: 3;
+  bottom: 4%;
+  left: 6%;
+  display: grid;
+  gap: .2rem;
+  color: #174b3a;
+  font-size: clamp(.58rem, .9vw, .72rem);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.product-poster-contact span:last-child {
+  color: #12824c;
+}
+
+.product-detail-poster {
+  aspect-ratio: 1;
+  min-height: 0;
+}
+
+.product-poster-thumb {
+  width: 100%;
+  height: 100%;
+  border-radius: .6rem;
+}
+
+.product-poster-thumb .product-poster-copy {
+  top: 34%;
+  width: 49%;
+}
+
+.product-poster-thumb .product-poster-copy h3 {
+  margin-bottom: 0;
+  font-size: clamp(.45rem, .7vw, .6rem);
+  -webkit-line-clamp: 3;
+}
+
+.product-poster-thumb .product-poster-copy ul,
+.product-poster-thumb .product-poster-contact {
+  display: none;
+}
+
+.product-poster-thumb .product-poster-image {
+  top: 23%;
+  width: 50%;
+  height: 62%;
+}
+
+.product-detail-poster .product-poster-copy {
+  top: 32%;
+  left: 6%;
+  width: 44%;
+}
+
+.product-detail-poster .product-poster-copy h3 {
+  font-size: clamp(.95rem, 1.5vw, 1.2rem);
+}
+
+.product-detail-poster .product-poster-copy li {
+  font-size: clamp(.68rem, 1vw, .8rem);
+}
+
+.product-detail-poster .product-poster-image {
+  top: 16%;
+  right: 1%;
+  width: 55%;
+  height: 72%;
+}
+
+.product-detail-poster .product-poster-contact {
+  bottom: 4%;
+  left: 6%;
+}
+
+@media (max-width: 420px) {
+  .product-poster-copy {
+    top: 31%;
+    width: 46%;
+  }
+
+  .product-poster-copy h3 {
+    font-size: clamp(.82rem, 4vw, 1rem);
+  }
+
+  .product-poster-image {
+    right: 0;
+    width: 53%;
+  }
+
+  .product-detail-poster .product-poster-copy {
+    top: 31%;
+    width: 46%;
+  }
+
+  .product-detail-poster .product-poster-copy h3 {
+    font-size: clamp(.82rem, 4vw, 1rem);
+  }
+
+  .product-detail-poster .product-poster-image {
+    right: 0;
+    width: 53%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-poster-image { transition: none; }
+}

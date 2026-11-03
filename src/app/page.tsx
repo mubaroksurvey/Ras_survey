@@ -40,16 +40,13 @@ export default function Home({ isEnglish = false }: Props) {
           {/* Logo & Judul */}
           <div className="mb-8">
             <Image
-              src="/img/logo.png"
-              alt="Ras Survey Logo"
-              width={100}
-              height={100}
-              className="mx-auto"
+              src="/icon-no-bg.png"
+              alt="RAS SURVEY"
+              width={300}
+              height={300}
+              className="mx-auto h-56 w-56 object-contain sm:h-64 sm:w-64"
               priority
             />
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mt-4">
-              Ras Survey
-            </h1>
             <h2 className="text-lg sm:text-xl text-gray-700 mt-2">
               {isEnglish ? "Trusted Survey Equipment Store" : "Toko Alat Survey Terpercaya"}
             </h2>

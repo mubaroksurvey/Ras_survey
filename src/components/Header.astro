@@ -30,8 +30,7 @@ const links =
 <header class="site-header">
   <nav class="site-nav" aria-label={language === "en" ? "Main navigation" : "Navigasi utama"}>
     <a class="brand" href={home} aria-label={seo.site.name}>
-      <img src="/img/logo.png" alt="" width="42" height="42" />
-      <span>{seo.site.name}</span>
+      <img src="/icon-no-bg.png" alt={seo.site.name} width="72" height="56" />
     </a>
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-links">
       <span class="sr-only">{language === "en" ? "Open menu" : "Buka menu"}</span>
@@ -78,6 +77,11 @@ const links =
 </header>
 
 <script>
+  const siteSearch = document.querySelector<HTMLInputElement>("#site-search");
+  if (siteSearch) {
+    siteSearch.value = new URLSearchParams(window.location.search).get("q") ?? "";
+  }
+
   const languageSwitchPathKey = "language-switch-path";
   const languageSwitchScrollKey = "language-switch-scroll";
 
